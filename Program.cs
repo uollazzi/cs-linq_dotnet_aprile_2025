@@ -3,58 +3,97 @@
 // LINQ Language Integrated Query
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-var customers = Customers.CustomerList;
-Console.WriteLine($"Customers: {customers.Count}");
+// where
+#region where condizione
+int[] numbers = { 5, 4, 1, 3, 9, 8, 6, 7, 2, 0 };
 
-var categories = Products.CategoryList;
-Console.WriteLine($"Categories: {categories.Count}");
+var lowNums = numbers.Where(x => x < 5);
+Logger.Titolo("Numeri < 5:");
+Console.WriteLine(string.Join(",", lowNums));
 
+#endregion
+
+#region where condizione proprietà
 var products = Products.ProductList;
-Console.WriteLine($"Products: {products.Count}");
 
-// linq ha 2 tipi di sintassi
-// 1. Sintassi di Query (un po' più leggibile)
-// 2. Sintassi di metodo (più completa)
-int[] numbers = { 5, 10, 8, 3, 6, 12 };
-
-// tornare tutti i numeri pari ordinati
-
-// SELECT s.num FROM numbers s WHERE ISPARI(s.num) ORDER BY s.n
-// Sintasi di Query (Query Syntax)
-var numQuery1 = from num in numbers
-                where num % 2 == 0
-                orderby num
-                select num;
-
-// Sintassi di metodo (Method Syntax)
-var numQuery2 = numbers
-                .Where(num => num % 2 == 0)
-                .OrderBy(o => o);
-
-Logger.Titolo("Query Syntax");
-foreach (var n in numQuery1)
+var soldOutProducts = products.Where(x => x.UnitsInStock == 0);
+Logger.Titolo("Prodotti esauriti:");
+foreach (var p in soldOutProducts)
 {
-    Console.Write(n + " ");
+    Console.WriteLine(p);
 }
-Console.Write(Environment.NewLine);
+#endregion
 
+#region where condizione multipla
+var prezzo = 50.00M;
+var expensiveInStockProducts = products.Where(x => x.UnitPrice > prezzo && x.UnitsInStock > 0);
 
-Logger.Titolo("Method Syntax");
-foreach (var n in numQuery2)
+// oppure where concatenati
+expensiveInStockProducts = products.Where(x => x.UnitsInStock > 0);
+expensiveInStockProducts = expensiveInStockProducts.Where(x => x.UnitPrice > prezzo);
+Logger.Titolo($"Prodotto in stock che costano più di {prezzo}");
+foreach (var p in expensiveInStockProducts)
 {
-    Console.Write(n + " ");
+    Console.WriteLine(p);
 }
-Console.Write(Environment.NewLine);
+#endregion
 
-// INTERFACCE
-// La sintassi Linq si applica a qualsiasi oggetto C# che implmenti
-// IEnumerable o IQueryable (e derivate es: IOrderedEnumerable)
-// e spesso ritorna IEnumerable o IQueryable affinchè possiamo concatenare istruzioni
-// IEnumerable si applica ad oggetti caricati in memoria
-// IQueryable si applica a Database
+#region where in elenco
+string[] digits = ["zero", "uno", "due", "tre", "quattro", "cinque", "sei", "sette", "otto", "nove"];
+string[] numbersToFind = ["tre", "sei", "dodici"];
 
-Logger.Titolo("Ricerca film");
-var movies = Movies.GetMovies();
+var numsFound = digits.Where(x => numbersToFind.Contains(x));
+Logger.Titolo("Numeri da elenco:");
+Console.WriteLine(string.Join(",", numsFound));
+#endregion
 
-var darkKnight = movies.Find(m => m.Preview.Title == "The Dark Knight");
-Console.WriteLine(darkKnight.Preview.FullTitle);
+// first, last, single (orDefault)
+#region primo elemento
+var product = expensiveInStockProducts.First();
+#endregion
+
+#region primo elemento match
+string cominciaConS = digits.First(x => x.StartsWith("s"));
+Logger.Titolo($"Prima stringa che comincia con s");
+Console.WriteLine(cominciaConS);
+#endregion
+
+#region prima match o defaut
+var product789 = products.FirstOrDefault(x => x.ProductID == 789);
+Logger.Titolo("Prodotto con ID 789");
+Console.WriteLine(product789?.ProductName);
+#endregion
+
+#region single
+try
+{
+    // var prodotto = products.Single(x => x.UnitsInStock > 0);
+    var prodotto = products.SingleOrDefault(x => x.ProductID == 1000);
+    Logger.Titolo("Prodotto ID 1");
+    Console.WriteLine(prodotto);
+}
+catch (System.Exception)
+{
+    Console.WriteLine("ERRORE");
+}
+#endregion
+
+// all, any, contains
+#region any matches
+string[] words = ["uno", "due", "tre", "quattro"];
+bool lm3 = words.Any(x => x.Length > 3);
+Logger.Titolo("C'è almeno una parola con più di 3 lettere?");
+Console.WriteLine(lm3);
+#endregion
+
+#region all matches
+bool l3 = words.All(x => x.Length == 3);
+Logger.Titolo("Tutte le parole sono lunghe 3");
+Console.WriteLine(l3);
+#endregion
+
+#region contains
+bool c2 = words.Contains("due");
+Logger.Titolo("Contiene la parola 'due'?");
+Console.WriteLine(c2);
+#endregion
