@@ -1,3 +1,5 @@
+using cs_linq.Models;
+
 public static class StringExtensions
 {
     public static string ToZigZag(this string str)
@@ -21,5 +23,19 @@ public static class StringExtensions
         }
 
         return result;
+    }
+}
+
+public static class CustomerExtensions
+{
+    public static CustomerStats ToCustomerStats(this Customer customer)
+    {
+        return new CustomerStats()
+        {
+            Id = customer.CustomerID,
+            Name = customer.CompanyName,
+            TotaleAcquistato = customer.Orders.Sum(s => s.Total),
+            NumeroOrdini = customer.Orders.Count
+        };
     }
 }

@@ -17,3 +17,18 @@ var result = ints.OrderBy(o => o);
 
 var asd = "ciao sono groot";
 Console.WriteLine(asd.ToZigZag());
+
+var pippo = "sono pippo ha 45 anni";
+pippo.ToZigZag();
+
+
+var alfki = Customers.CustomerList.Single(c => c.CustomerID == "ALFKI");
+var alfkiStats = alfki.ToCustomerStats();
+Logger.Titolo("Statistiche di ALFKI");
+Console.WriteLine($"Id: {alfkiStats.Id} - Ordini: {alfkiStats.NumeroOrdini} - Totale: {alfkiStats.TotaleAcquistato:c}");
+
+Logger.Titolo("Statistiche clienti WA");
+foreach (var c in Customers.CustomerList.Where(c => c.Region == "WA").Select(s => s.ToCustomerStats()))
+{
+    Console.WriteLine($"Id: {c.Id} - Ordini: {c.NumeroOrdini} - Totale: {c.TotaleAcquistato:c}");
+}
